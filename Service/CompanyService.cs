@@ -25,22 +25,14 @@ namespace Service
 
         public IEnumerable<CompanyDto> GetAllCompanies()
         {
-            try
-            {
-                var companies = _repositoryManager.Companies.
-                    FindAll(trackChanges: false)
-                    .OrderBy(c => c.Name)
-                    .ToList();
+            var companies = _repositoryManager.Companies.
+                   FindAll(trackChanges: false)
+                   .OrderBy(c => c.Name)
+                   .ToList();
 
-                var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
+            var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
 
-                return companiesDto;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Something went wrong in the {nameof(GetAllCompanies)} service method {ex}");
-                throw;
-            }
+            return companiesDto;
         }
     }
 }

@@ -22,16 +22,9 @@ namespace CompanyEmployee.Presentation
         [HttpGet]
         public IActionResult GetCompanies()
         {
-            try
-            {
-                var companies = _serviceManager.CompanyService.GetAllCompanies();
+            var companies = _serviceManager.CompanyService.GetAllCompanies();
 
-                return Ok(companies);
-            }
-            catch
-            {
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(companies);
         }
     }
 }
