@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.Exceptions;
+using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 using System;
@@ -24,6 +25,36 @@ namespace Service
             _mapper = mapper;
         }
 
+        public CompanyDto CreateCompany(CompanyForCreationDto company)
+        {
+            var companyEntity = _mapper.Map<Company>(company);
+
+            _repositoryManager.Companies.Create(companyEntity);
+            _repositoryManager.Save();
+
+            var companyDto = _mapper.Map<CompanyDto>(companyEntity);
+
+            return companyDto;
+        }
+
+        public (IEnumerable<CompanyDto> companies, string ids) CreateCompanyCollection(IEnumerable<CompanyForCreationDto> companyCollection)
+        {
+            if (companyCollection is null)
+                throw new CompanyCollectionBadRequest();
+
+            var companyEntities = _mapper.Map<IEnumerable<Company>>(companyCollection);
+
+            foreach (var company in companyEntities)
+                _repositoryManager.Companies.Create(company);
+
+            _repositoryManager.Save();
+
+            var companyCollectionToReturn = _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
+            var ids = string.Join(",", companyCollectionToReturn.Select(c => c.Id));
+
+            return (companies: companyCollectionToReturn, ids: ids);
+        }
+
         public IEnumerable<CompanyDto> GetAllCompanies()
         {
             var companies = _repositoryManager.Companies.
@@ -34,6 +65,23 @@ namespace Service
             var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
 
             return companiesDto;
+        }
+
+        public IEnumerable<CompanyDto> GetByIds(IEnumerable<Guid> ids)
+        {
+            if (ids is null)
+                throw new IdParametersBadRequestException();
+
+            var companyEntities = _repositoryManager.Companies
+                .FindByCondition(c => ids.Contains(c.Id), trackChanges: false)
+                .ToList();
+
+            if (ids.Count() != companyEntities.Count())
+                throw new CollectionByIdsBadRequestException();
+
+            var companiesToReturn = _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
+
+            return companiesToReturn;
         }
 
         public CompanyDto GetCompany(Guid companyId)
