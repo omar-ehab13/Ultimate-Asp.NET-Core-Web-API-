@@ -26,5 +26,12 @@ namespace CompanyEmployee.Presentation
 
             return Ok(companies);
         }
+
+        [HttpGet("{id:guid}")]
+        public IActionResult GetCompany(Guid id)
+        {
+            var company = _serviceManager.CompanyService.GetCompany(id);
+            return Ok(company);
+        }
     }
 }

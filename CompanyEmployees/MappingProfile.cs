@@ -11,6 +11,8 @@ namespace CompanyEmployees
             CreateMap<Company, CompanyDto>()
                 .ForCtorParam(nameof(CompanyDto.FullAddress),
                     options => options.MapFrom(x => string.Join(' ', x.Address, x.Country)));
+
+            CreateMap<Employee, EmployeeDto>();
         }
     }
 }

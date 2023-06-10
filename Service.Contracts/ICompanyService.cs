@@ -10,5 +10,6 @@ namespace Service.Contracts
     public interface ICompanyService
     {
         IEnumerable<CompanyDto> GetAllCompanies();
+        CompanyDto GetCompany(Guid companyId);
     }
 }
