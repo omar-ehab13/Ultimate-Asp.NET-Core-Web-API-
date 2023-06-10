@@ -12,5 +12,6 @@ namespace Service.Contracts
         IEnumerable<EmployeeDto> GetEmployees(Guid companyId);
         EmployeeDto GetEmployee(Guid companyId, Guid employeeId);
         EmployeeDto CreateEmployee(Guid companyId, EmployeeForCreationDto employee);
+        void DeleteEmployeeForCompany(Guid companyId, Guid employeeId);
     }
 }
