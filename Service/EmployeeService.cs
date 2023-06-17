@@ -25,6 +25,45 @@ namespace Service
             _mapper = mapper;
         }
 
+        public EmployeeDto CreateEmployee(Guid companyId, EmployeeForCreationDto employee)
+        {
+            var company = _repositoryManager.Companies
+                .FindByCondition(c => c.Id == companyId, trackChanges: false);
+
+            if (company is null)
+                throw new CompanyNotFoundException(companyId);
+
+            var employeeEntity = _mapper.Map<Employee>(employee);
+            employeeEntity.CompanyId = companyId;
+
+            _repositoryManager.Employees.Create(employeeEntity);
+            _repositoryManager.Save();
+
+            var employeeToReturn = _mapper.Map<EmployeeDto>(employeeEntity);
+
+            return employeeToReturn;
+        }
+
+        public void DeleteEmployeeForCompany(Guid companyId, Guid employeeId)
+        {
+            var company = _repositoryManager.Companies
+                .FindByCondition(c => c.Id == companyId, trackChanges: false)
+                .FirstOrDefault();
+
+            if (company is null)
+                throw new CompanyNotFoundException(companyId);
+
+            var employee = _repositoryManager.Employees
+                .FindByCondition(e => e.CompanyId == companyId && e.Id == employeeId, trackChanges: false)
+                .FirstOrDefault();
+
+            if (employee is null)
+                throw new EmployeeNotFoundException(employeeId);
+
+            _repositoryManager.Employees.Delete(employee);
+            _repositoryManager.Save();
+        }
+
         public EmployeeDto GetEmployee(Guid companyId, Guid employeeId)
         {
             var company = _repositoryManager.Companies
@@ -63,6 +102,26 @@ namespace Service
             var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employees);
 
             return employeesDto;
+        }
+
+        public void UpdateEmployeeForCompany(Guid companyId, Guid id, EmployeeForUpdateDto employeeForUpdate)
+        {
+            var company = _repositoryManager.Companies
+                .FindByCondition(c => c.Id == companyId, trackChanges: false)
+                .FirstOrDefault();
+
+            if (company is null)
+                throw new CompanyNotFoundException(companyId);
+
+            var employeeEntity = _repositoryManager.Employees
+                .FindByCondition(e => e.Id == id, trackChanges: true)
+                .FirstOrDefault();
+
+            if (employeeEntity is null)
+                throw new EmployeeNotFoundException(id);
+
+            _mapper.Map(employeeForUpdate, employeeEntity);
+            _repositoryManager.Save();
         }
     }
 }
