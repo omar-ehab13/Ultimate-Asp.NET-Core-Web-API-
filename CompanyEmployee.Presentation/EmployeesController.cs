@@ -51,5 +51,13 @@ namespace CompanyEmployee.Presentation
 
             return NoContent();
         }
+
+        [HttpPut("{id:guid}")]
+        public IActionResult UpdateEmployeeForCompany(Guid companyId, Guid id, [FromBody] EmployeeForUpdateDto employeeForUpdate)
+        {
+            _serviceManager.EmployeeService.UpdateEmployeeForCompany(companyId, id, employeeForUpdate);
+
+            return NoContent();
+        }
     }
 }

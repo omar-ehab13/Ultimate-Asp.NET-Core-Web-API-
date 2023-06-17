@@ -13,5 +13,6 @@ namespace Service.Contracts
         EmployeeDto GetEmployee(Guid companyId, Guid employeeId);
         EmployeeDto CreateEmployee(Guid companyId, EmployeeForCreationDto employee);
         void DeleteEmployeeForCompany(Guid companyId, Guid employeeId);
+        void UpdateEmployeeForCompany(Guid companyId, Guid id, EmployeeForUpdateDto employeeForUpdate);
     }
 }

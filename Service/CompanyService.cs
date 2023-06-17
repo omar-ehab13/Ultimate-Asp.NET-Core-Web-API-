@@ -110,5 +110,17 @@ namespace Service
 
             return companyDto; 
         }
+
+        public void UpdateCompany(Guid companyId, CompanyForUpdateDto companyForUpdate)
+        {
+            var companyEntity = _repositoryManager.Companies
+                .FindByCondition(c => c.Id == companyId, trackChanges: true);
+
+            if (companyEntity is null)
+                throw new CompanyNotFoundException(companyId);
+
+            _mapper.Map(companyForUpdate, companyEntity);
+            _repositoryManager.Save();
+        }
     }
 }
