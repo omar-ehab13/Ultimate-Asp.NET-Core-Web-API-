@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace CompanyEmployee.Presentation
@@ -18,9 +20,11 @@ namespace CompanyEmployee.Presentation
         public EmployeesController(IServiceManager serviceManager) => _serviceManager = serviceManager;
 
         [HttpGet]
-        public IActionResult GetEmployeesForCompany(Guid companyId)
+        public IActionResult GetEmployeesForCompany(Guid companyId, [FromQuery] EmployeeParameters employeeParameters)
         {
-            var employees = _serviceManager.EmployeeService.GetEmployees(companyId);
+            var employees = _serviceManager.EmployeeService.GetEmployees(companyId, employeeParameters);
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(employees.MetaData));
 
             return Ok(employees);
         }

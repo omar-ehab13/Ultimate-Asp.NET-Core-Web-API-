@@ -4,6 +4,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,7 +86,7 @@ namespace Service
             return employeeDto;
         }
 
-        public IEnumerable<EmployeeDto> GetEmployees(Guid companyId)
+        public PagedList<EmployeeDto> GetEmployees(Guid companyId, EmployeeParameters employeeParameters)
         {
             var company = _repositoryManager.Companies
                 .FindByCondition(c => c.Id == companyId, trackChanges: false)
@@ -101,7 +102,7 @@ namespace Service
 
             var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employees);
 
-            return employeesDto;
+            return PagedList<EmployeeDto>.ToPagedList(employeesDto, employeeParameters.PageNumber, employeeParameters.PageSize);
         }
 
         public void UpdateEmployeeForCompany(Guid companyId, Guid id, EmployeeForUpdateDto employeeForUpdate)
